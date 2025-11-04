@@ -177,8 +177,28 @@ export class AuthService {
 
   // Cerrar sesión
   logout(): void {
+    // Limpiar usuario actual
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
+    
+    // Limpiar todos los datos relacionados con la sesión
+    localStorage.removeItem('walkRequests');
+    localStorage.removeItem('walkRatings');
+    localStorage.removeItem('appRating');
+    
+    // Limpiar todos los chats (buscamos todas las claves que empiezan con 'chat_')
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('chat_')) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+    
+    // Nota: 'users' se mantiene por si se necesita para desarrollo, pero ya no se usa
+    // Si quieres limpiarlo también, descomenta la siguiente línea:
+    // localStorage.removeItem('users');
   }
 
   // Obtener usuarios almacenados

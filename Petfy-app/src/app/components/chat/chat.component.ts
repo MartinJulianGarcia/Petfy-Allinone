@@ -51,22 +51,23 @@ export class ChatComponent implements OnInit {
     // Cargar mensajes existentes desde localStorage
     const chatKey = `chat_${this.requestId}_${this.walkerName}`;
     const savedMessages = localStorage.getItem(chatKey);
+    
     if (savedMessages) {
-      this.messages = JSON.parse(savedMessages).map((msg: any) => ({
+      // Si hay mensajes guardados, cargarlos
+      const loadedMessages = JSON.parse(savedMessages).map((msg: any) => ({
         ...msg,
         timestamp: new Date(msg.timestamp)
       }));
-    } else {
-      // Mensaje inicial dependiendo de quién lo ve
+      
+      // Si es paseador, filtrar mensajes iniciales automáticos (id: 1)
       if (this.isWalker) {
-        // Si es el paseador, mensaje de bienvenida del paseador
-        this.messages = [{
-          id: 1,
-          text: `¡Hola! Soy ${this.walkerName}, voy a acompañar a tu mascota en el paseo.`,
-          sender: 'walker',
-          timestamp: new Date()
-        }];
+        this.messages = loadedMessages.filter((msg: Message) => msg.id !== 1);
       } else {
+        this.messages = loadedMessages;
+      }
+    } else {
+      // Mensaje inicial solo para el cliente
+      if (!this.isWalker) {
         // Si es el cliente, mensaje inicial del paseador
         this.messages = [{
           id: 1,
@@ -74,6 +75,11 @@ export class ChatComponent implements OnInit {
           sender: 'walker',
           timestamp: new Date()
         }];
+        // Guardar el mensaje inicial para el cliente
+        this.saveMessages();
+      } else {
+        // Si es el paseador, el chat empieza vacío
+        this.messages = [];
       }
     }
   }
