@@ -1,0 +1,232 @@
+<div class="history-container">
+  <!-- Header con navegación -->
+  <div class="header">
+    <div class="header-left">
+      <button class="back-button" (click)="goBack()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 12H5m7-7l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <h1>Historial</h1>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="main-content">
+    <!-- Panel izquierdo: Historial de paseos -->
+    <div class="history-panel">
+      <div class="panel-header">
+        <h2>Historial de paseos</h2>
+      </div>
+
+      <!-- Filtros -->
+      <div class="filters-section">
+        <div class="filter-group">
+          <label class="filter-label">Desde:</label>
+          <div class="date-filters">
+            <input 
+              type="date" 
+              [(ngModel)]="startDate" 
+              (change)="filterWalks()"
+              placeholder="Fecha desde"
+              class="date-input"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de paseos -->
+      <div class="walks-list">
+        <!-- Mensaje cuando no hay paseos finalizados -->
+        <div class="empty-state" *ngIf="filteredWalks.length === 0 && finalizedWalks.length === 0">
+          <div class="empty-message">
+            <p>Aún no tienes paseos finalizados:</p>
+            <p>mientras tanto puedes puntuar nuestra app</p>
+          </div>
+          <div class="rate-app-item" (click)="rateApp()" [class.rated]="appRating !== null">
+            <div class="rate-app-content">
+              <span class="rate-app-title">Calificar app</span>
+              <div class="app-rating-display" *ngIf="appRating !== null">
+                <svg *ngFor="let star of [1,2,3,4,5]" 
+                     width="14" 
+                     height="14" 
+                     viewBox="0 0 24 24" 
+                     class="rating-star"
+                     [class.filled]="star <= appRating">
+                  <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" 
+                           fill="#fbbf24"/>
+                </svg>
+              </div>
+              <svg *ngIf="appRating === null" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="currentColor"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de paseos finalizados -->
+        <div class="walk-item" 
+             *ngFor="let walk of filteredWalks" 
+             (click)="selectWalk(walk)"
+             [class.selected]="selectedWalk?.id === walk.id">
+          <div class="walk-info">
+            <div class="walk-header">
+              <span class="walk-date">{{ formatDate(walk.date) }}</span>
+              <span class="walk-time">{{ walk.time }}</span>
+            </div>
+            <div class="walk-details">
+              <span class="walker-name">Paseador: {{ walk.walker }}</span>
+              <span class="walk-status">FINALIZADO</span>
+            </div>
+            <div class="walk-address">{{ walk.address }}</div>
+            <div class="walk-rating" *ngIf="walk.rating">
+              <span class="rating-label">Calificación:</span>
+              <div class="rating-stars">
+                <svg *ngFor="let star of [1,2,3,4,5]" 
+                     width="16" 
+                     height="16" 
+                     viewBox="0 0 24 24" 
+                     class="rating-star"
+                     [class.filled]="star <= walk.rating">
+                  <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" 
+                           [attr.fill]="star <= walk.rating ? '#fbbf24' : 'none'"
+                           stroke="#fbbf24"
+                           stroke-width="1.5"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <button class="rate-button" 
+                  (click)="selectRating(walk); $event.stopPropagation()"
+                  [disabled]="walk.rating !== undefined">
+            {{ walk.rating ? 'Ya calificado' : 'Calificar atención' }}
+          </button>
+        </div>
+
+        <!-- Botón de calificar app cuando hay paseos -->
+        <div class="rate-app-item" 
+             *ngIf="filteredWalks.length > 0" 
+             (click)="rateApp()"
+             [class.rated]="appRating !== null">
+          <div class="rate-app-content">
+            <span class="rate-app-title">Calificar app</span>
+            <div class="app-rating-display" *ngIf="appRating !== null">
+              <svg *ngFor="let star of [1,2,3,4,5]" 
+                   width="14" 
+                   height="14" 
+                   viewBox="0 0 24 24" 
+                   class="rating-star"
+                   [class.filled]="star <= appRating">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" 
+                         fill="#fbbf24"/>
+              </svg>
+            </div>
+            <svg *ngIf="appRating === null" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="currentColor"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel derecho: Detalle -->
+    <div class="detail-panel">
+      <div class="panel-header">
+        <h2>Detalle</h2>
+      </div>
+      <div class="detail-content">
+        <div class="empty-detail" *ngIf="!selectedWalk">
+          <p>Seleccioná un caso para ver el detalle.</p>
+        </div>
+        <div class="walk-detail" *ngIf="selectedWalk">
+          <h3>Detalle del paseo</h3>
+          <div class="detail-item">
+            <span class="detail-label">Fecha:</span>
+            <span class="detail-value">{{ selectedWalk.date }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Hora:</span>
+            <span class="detail-value">{{ selectedWalk.time }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Paseador:</span>
+            <span class="detail-value">{{ selectedWalk.walker }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Dirección:</span>
+            <span class="detail-value">{{ selectedWalk.address }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Estado:</span>
+            <span class="detail-value status-finalized">FINALIZADO</span>
+          </div>
+          <div class="detail-item" *ngIf="selectedWalk.rating">
+            <span class="detail-label">Calificación:</span>
+            <div class="detail-rating">
+              <svg *ngFor="let star of [1,2,3,4,5]" 
+                   width="20" 
+                   height="20" 
+                   viewBox="0 0 24 24" 
+                   class="rating-star"
+                   [class.filled]="star <= selectedWalk.rating">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" 
+                         [attr.fill]="star <= selectedWalk.rating ? '#fbbf24' : 'none'"
+                         stroke="#fbbf24"
+                         stroke-width="2"/>
+              </svg>
+              <span class="rating-value">{{ selectedWalk.rating }}/5</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de calificación -->
+<div class="rating-modal" *ngIf="showRatingModal" (click)="closeRatingModal()">
+  <div class="rating-modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ ratingType === 'app' ? 'Calificar app' : 'Calificar atención' }}</h3>
+      <button class="close-button" (click)="closeRatingModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="rating-content">
+      <div class="stars-container">
+        <svg 
+          *ngFor="let star of [1,2,3,4,5]; let i = index"
+          width="32" 
+          height="32" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          xmlns="http://www.w3.org/2000/svg"
+          class="star"
+          [class.filled]="(ratingHover || currentRating) >= star"
+          (click)="setRating(star)"
+          (mouseenter)="hoverRating(star)"
+          (mouseleave)="clearHover()"
+        >
+          <polygon 
+            points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" 
+            fill="none"
+            stroke="#fbbf24"
+            stroke-width="2"
+          />
+        </svg>
+      </div>
+      
+      <div class="rating-emoji">
+        <span class="emoji">😊</span>
+      </div>
+      
+      <button class="submit-rating-button" (click)="submitRating()">
+        Enviar calificación
+      </button>
+    </div>
+  </div>
+</div>

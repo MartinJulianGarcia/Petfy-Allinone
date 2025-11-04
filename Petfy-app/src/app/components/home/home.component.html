@@ -1,0 +1,116 @@
+<div class="home-container">
+  <!-- Header azul con logo y perfil -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-container">
+        <img src="petfy-logo.png" alt="Petfy Logo" class="logo" 
+             onerror="console.log('Error cargando logo'); this.style.display='none';">
+        <span class="logo-text">Petfy</span>
+      </div>
+    </div>
+    <div class="header-center">
+      <h1>Inicio</h1>
+    </div>
+    <div class="header-right">
+      <div class="history-icon" (click)="goToHistory()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="profile-icon" (click)="goToProfile()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="8" r="4" fill="white"/>
+          <path d="M12 14c-4 0-8 2-8 6v2h16v-2c0-4-4-6-8-6z" fill="white"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <!-- Banner superior -->
+      <div class="stats-banner">
+        <div class="star-icon">⭐</div>
+        <span>Más de 5000 paseos atendidos este mes</span>
+      </div>
+
+      <!-- Título principal -->
+      <h1 class="hero-title">
+        Bienvenido, <span class="highlight">{{ currentUser?.username }}</span>
+      </h1>
+
+      <!-- Descripción -->
+      <p class="hero-description">
+        Gestiona tus paseos como cliente o acepta solicitudes como paseador. Todo en un solo lugar.
+      </p>
+
+      <!-- Botones de acción -->
+      <div class="action-buttons">
+        <button class="primary-button" (click)="goToVeterinaries()">
+          <span>Solicitar Paseo</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        
+        <button class="secondary-button" (click)="createEmergencyRequest()">
+          Ver Mis Solicitudes
+        </button>
+      </div>
+
+      <!-- Botón adicional para paseadores -->
+      <div class="walker-section" *ngIf="isWalker">
+        <button class="walker-button" (click)="goToWalkerRequests()">
+          <span>Ver Peticiones como Paseador</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Estadísticas -->
+      <div class="stats-section">
+        <div class="stat-item">
+          <div class="stat-number">500+</div>
+          <div class="stat-label">Paseos</div>
+        </div>
+        
+        <div class="stat-divider"></div>
+        
+        <div class="stat-item">
+          <div class="stat-number">50+</div>
+          <div class="stat-label">Paseadores</div>
+        </div>
+        
+        <div class="stat-divider"></div>
+        
+        <div class="stat-item">
+          <div class="stat-number">4.9</div>
+          <div class="stat-label">Calificación promedio</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Imagen del hero -->
+    <div class="hero-image">
+      <div class="image-card">
+        <img 
+          src="home-image.png" 
+          alt="Paseadores profesionales con mascotas"
+          class="hero-image-content"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <!-- Imagen de respaldo si no se encuentra la imagen principal -->
+        <div class="placeholder-image" style="display: none;">
+          <div class="placeholder-content">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" fill="#60a5fa" fill-opacity="0.1"/>
+              <path d="M12 6v6l4 2" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <p>La imagen debería estar en:<br><code>public/home-image.png</code></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

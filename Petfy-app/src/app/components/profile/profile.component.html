@@ -1,0 +1,79 @@
+<div class="profile-container">
+  <!-- Header con navegación -->
+  <div class="header">
+    <div class="header-left">
+      <button class="back-button" (click)="goBack()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 12H5m7-7l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <h1>Mi Perfil</h1>
+    </div>
+  </div>
+
+  <!-- Contenido del perfil -->
+  <div class="profile-content">
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="profile-avatar">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="8" r="4" fill="#60a5fa"/>
+            <path d="M12 14c-4 0-8 2-8 6v2h16v-2c0-4-4-6-8-6z" fill="#60a5fa"/>
+          </svg>
+        </div>
+        <div class="profile-info">
+          <h2>{{ currentUser?.username }}</h2>
+          <p>{{ currentUser?.email }}</p>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <button class="action-button primary" (click)="editProfile()">
+          Editar Perfil
+        </button>
+        <button class="action-button secondary" (click)="logout()">
+          Cerrar Sesión
+        </button>
+      </div>
+      
+      <!-- Historial de paseos -->
+      <div class="history-section">
+        <button class="history-button" (click)="goToHistory()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Historial de paseos</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="profile-details">
+      <h3>Información de la cuenta</h3>
+      <div class="detail-item">
+        <span class="label">Usuario:</span>
+        <span class="value">{{ currentUser?.username }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">Email:</span>
+        <span class="value">{{ currentUser?.email }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">Miembro desde:</span>
+        <span class="value">Octubre 2025</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">Rol:</span>
+        <span class="value role-value" [class.walker-role]="isWalker">{{ isWalker ? 'Paseador' : 'Cliente' }}</span>
+      </div>
+    </div>
+
+    <!-- Botón para ser paseador (solo si no es paseador) -->
+    <div class="walker-section" *ngIf="!isWalker">
+      <button class="walker-button" (click)="goToWalkerApplication()">
+        Quiero ser paseador
+      </button>
+    </div>
+  </div>
+</div>
+

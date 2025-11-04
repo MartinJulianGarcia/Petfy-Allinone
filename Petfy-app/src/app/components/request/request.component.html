@@ -1,0 +1,124 @@
+<div class="request-container">
+  <!-- Header azul -->
+  <div class="header">
+    <div class="header-left">
+      <button class="back-button" (click)="goBack()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 12H5M12 19l-7-7 7-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="header-center">
+      <h1>{{ isEditing ? 'Modificar Paseo Actual' : 'Mi Solicitud' }}</h1>
+    </div>
+    <div class="header-right"></div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="main-content" (click)="closeDropdown()">
+    <!-- Formulario izquierdo -->
+    <div class="form-section">
+      <!-- Campo Fecha -->
+      <div class="form-group">
+        <label for="date" class="form-label">Fecha *</label>
+        <input 
+          type="date" 
+          id="date"
+          [(ngModel)]="requestData.date"
+          [min]="getTodayDate()"
+          required
+          class="form-input">
+      </div>
+
+      <!-- Campo Hora de inicio -->
+      <div class="form-group">
+        <label for="startTime" class="form-label">Hora de inicio *</label>
+        <select 
+          id="startTime"
+          [(ngModel)]="requestData.startTime"
+          (change)="onTimeChange()"
+          required
+          class="form-select">
+          <option value="">Selecciona un horario</option>
+          <option *ngFor="let time of timeSlots" [value]="time">{{ time }}</option>
+        </select>
+        <small class="form-help">Los paseos duran 1 hora (de 7:00 AM a 10:00 PM)</small>
+      </div>
+
+      <!-- Campo Hora de fin (automático) -->
+      <div class="form-group" *ngIf="requestData.endTime">
+        <label for="endTime" class="form-label">Hora de fin</label>
+        <input 
+          type="time" 
+          id="endTime"
+          [(ngModel)]="requestData.endTime"
+          readonly
+          class="form-input readonly">
+      </div>
+
+      <!-- Campo Dirección -->
+      <div class="form-group">
+        <label for="address" class="form-label">Dirección *</label>
+        <small class="form-help">(actualmente solo disponible en CABA)</small>
+        <input 
+          type="text" 
+          id="address"
+          [(ngModel)]="requestData.address"
+          required
+          placeholder="Ingresa tu dirección"
+          class="form-input">
+      </div>
+
+      <!-- Selector de paseadores -->
+      <div class="walkers-section">
+        <label class="form-label">Paseador *</label>
+        <small class="form-help">Aleatorio asignará al primer paseador disponible</small>
+        <div class="dropdown-container">
+          <button 
+            class="walker-select-button" 
+            (click)="toggleWalkersDropdown(); $event.stopPropagation()"
+            type="button">
+            <span class="selected-walker">{{ selectedWalkerName || 'Selecciona un paseador' }}</span>
+            <svg class="dropdown-arrow" [class.rotated]="showWalkersDropdown" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          
+          <div class="dropdown-menu" *ngIf="showWalkersDropdown">
+            <button 
+              class="dropdown-item" 
+              [class.random-option]="walker.isRandom"
+              (click)="selectWalker(walker.name); $event.stopPropagation()"
+              *ngFor="let walker of walkers">
+              {{ walker.name }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón Confirmar -->
+      <button class="confirm-button" (click)="confirmRequest()">
+        {{ isEditing ? 'Guardar Cambios' : 'Confirmar' }}
+      </button>
+    </div>
+
+    <!-- Imagen derecha -->
+    <div class="image-section">
+      <img 
+        src="dog-walker-image.png" 
+        alt="Paseador profesional con múltiples perros"
+        class="request-image"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <!-- Imagen de respaldo si no se encuentra la imagen principal -->
+      <div class="placeholder-image" style="display: none;">
+        <div class="placeholder-content">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" fill="#60a5fa" fill-opacity="0.1"/>
+            <path d="M12 6v6l4 2" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <p>La imagen debería estar en:<br><code>public/dog-walker-image.png</code></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

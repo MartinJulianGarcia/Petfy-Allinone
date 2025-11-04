@@ -1,0 +1,71 @@
+<div class="requests-container">
+  <!-- Header azul -->
+  <div class="header">
+    <div class="header-left">
+      <button class="back-button" (click)="goBack()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 12H5M12 19l-7-7 7-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="header-center">
+      <h1>Mis solicitudes</h1>
+    </div>
+    <div class="header-right"></div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="main-content">
+    <!-- Paseos a confirmar -->
+    <div class="section">
+      <h3 class="section-title">Paseos a confirmar:</h3>
+      <div class="requests-list">
+        <div 
+          class="request-item"
+          [class.selected]="selectedRequest === request"
+          (click)="selectRequest(request)"
+          *ngFor="let request of pendingRequests">
+          {{ formatDate(request.date) }} - {{ request.startTime }}
+        </div>
+        <div class="empty-message" *ngIf="pendingRequests.length === 0">
+          No hay paseos pendientes
+        </div>
+      </div>
+    </div>
+
+    <!-- Paseos confirmados -->
+    <div class="section">
+      <h3 class="section-title">Paseos confirmados:</h3>
+      <div class="requests-list">
+        <div 
+          class="request-item confirmed"
+          [class.selected]="selectedRequest === request"
+          (click)="selectRequest(request)"
+          *ngFor="let request of confirmedRequests">
+          <span class="request-info">
+            {{ formatDate(request.date) }} - {{ request.startTime }}
+            <span class="walker-info">paseador: {{ request.walker }}</span>
+          </span>
+          <button class="message-button" (click)="openChat(request); $event.stopPropagation()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="empty-message" *ngIf="confirmedRequests.length === 0">
+          No hay paseos confirmados
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botones de acción -->
+  <div class="action-buttons">
+    <button class="modify-button" (click)="modifyRequest()">
+      Modificar
+    </button>
+    <button class="cancel-button" (click)="cancelRequest()">
+      Cancelar
+    </button>
+  </div>
+</div>

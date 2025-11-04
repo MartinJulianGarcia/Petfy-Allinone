@@ -1,0 +1,252 @@
+/* Reset y configuración base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.requests-container {
+  min-height: 100vh;
+  background-color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Header azul */
+.header {
+  background-color: #60a5fa;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  margin-bottom: 40px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.header-center h1 {
+  color: white;
+  font-size: 24px;
+  font-weight: 500;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+/* Contenido principal */
+.main-content {
+  display: flex;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px 100px 40px;
+}
+
+/* Secciones */
+.section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-title {
+  color: #1e40af;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.auto-confirm-info {
+  color: #6b7280;
+  font-size: 12px;
+  font-style: italic;
+  margin-bottom: 16px;
+  display: block;
+}
+
+/* Lista de solicitudes */
+.requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.request-item {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border: none;
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.request-item:hover {
+  background-color: #bae6fd;
+}
+
+.request-item.selected {
+  background-color: #0369a1;
+  color: white;
+}
+
+.request-item.confirmed {
+  background-color: #1e40af;
+  color: white;
+}
+
+.request-item.confirmed:hover {
+  background-color: #1e3a8a;
+}
+
+.request-item.confirmed.selected {
+  background-color: #10b981;
+  color: white;
+  border: 2px solid #34d399;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.request-item.confirmed.selected:hover {
+  background-color: #059669;
+}
+
+.request-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.walker-info {
+  font-size: 12px;
+  opacity: 0.8;
+  font-weight: 500;
+}
+
+.message-button {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.message-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.empty-message {
+  color: #6b7280;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Botones de acción */
+.action-buttons {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-top: 1px solid #e5e7eb;
+  padding: 20px 40px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.modify-button {
+  background-color: #059669;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  min-width: 120px;
+}
+
+.modify-button:hover {
+  background-color: #047857;
+}
+
+.cancel-button {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  min-width: 120px;
+}
+
+.cancel-button:hover {
+  background-color: #b91c1c;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    padding: 0 20px;
+  }
+  
+  .header-center h1 {
+    font-size: 20px;
+  }
+  
+  .main-content {
+    flex-direction: column;
+    gap: 30px;
+    padding: 0 20px 100px 20px;
+  }
+  
+  .action-buttons {
+    padding: 20px;
+    flex-direction: column;
+  }
+  
+  .modify-button,
+  .cancel-button {
+    width: 100%;
+  }
+}

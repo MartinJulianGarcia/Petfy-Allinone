@@ -1,0 +1,89 @@
+<div class="walker-application-container">
+  <!-- Header con navegación -->
+  <div class="header">
+    <div class="header-left">
+      <button class="back-button" (click)="goBack()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 12H5m7-7l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <h1>Solicitud de Paseador</h1>
+    </div>
+  </div>
+
+  <!-- Contenido del formulario -->
+  <div class="form-container">
+    <div class="form-card">
+      <div class="form-header">
+        <h2>¡Únete a nuestro equipo!</h2>
+        <p>Completa el formulario para convertirte en paseador de mascotas</p>
+      </div>
+
+      <form (ngSubmit)="submitApplication()" class="application-form">
+        <!-- Subir imagen del documento -->
+        <div class="form-group">
+          <label class="form-label">Imagen del documento *</label>
+          <small class="form-help">Sube una foto clara de tu documento de identidad</small>
+          
+          <div class="file-upload-container">
+            <input 
+              type="file" 
+              id="documentImage" 
+              accept="image/*"
+              (change)="onFileSelected($event)"
+              class="file-input"
+              #fileInput
+            >
+            <button type="button" class="file-upload-button" (click)="fileInput.click()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>{{ selectedFileName || 'Seleccionar imagen' }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Número de teléfono -->
+        <div class="form-group">
+          <label class="form-label" for="phone">Número de teléfono *</label>
+          <input 
+            type="tel" 
+            id="phone" 
+            [(ngModel)]="applicationForm.phone"
+            name="phone"
+            placeholder="Ej: +54 11 1234-5678"
+            required 
+            class="form-input"
+          >
+        </div>
+
+        <!-- Descripción personal -->
+        <div class="form-group">
+          <label class="form-label" for="description">Descripción personal *</label>
+          <small class="form-help">Cuéntanos sobre ti, tu experiencia con mascotas y por qué quieres ser paseador</small>
+          <textarea 
+            id="description" 
+            [(ngModel)]="applicationForm.description"
+            name="description"
+            placeholder="Ej: Soy una persona responsable y amante de los animales. Tengo experiencia cuidando mascotas desde hace 3 años..."
+            required 
+            class="form-textarea"
+            rows="5"
+          ></textarea>
+        </div>
+
+        <!-- Botones -->
+        <div class="form-actions">
+          <button type="button" class="cancel-button" (click)="goBack()">
+            Cancelar
+          </button>
+          <button type="submit" class="submit-button">
+            Enviar Solicitud
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,81 @@
+<div class="login-container">
+  <!-- Header azul con logo -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-container">
+        <img src="petfy-logo.png" alt="Petfy Logo" class="logo" 
+             onerror="console.log('Error cargando logo'); this.style.display='none';">
+        <span class="logo-text">Petfy</span>
+      </div>
+    </div>
+    <div class="header-center">
+      <h1>Iniciar sesion</h1>
+    </div>
+    <div class="header-right">
+      <button class="header-button" (click)="goToContact()">Contacto</button>
+      <button class="header-button" (click)="goToAbout()">Sobre Nosotros</button>
+    </div>
+  </div>
+
+  <!-- Contenedor del formulario -->
+  <div class="form-container">
+    <form class="login-form" (ngSubmit)="onSubmit()" #loginForm="ngForm">
+
+      <!-- Campo Email Address -->
+      <div class="form-group">
+        <label for="email" class="form-label">Dirección de correo electrónico</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email"
+          [(ngModel)]="user.email"
+          (input)="validateEmail()"
+          (blur)="validateEmail()"
+          #email="ngModel"
+          required
+          email
+          class="form-input"
+          [class.error]="errors.email"
+          placeholder="Ingresa tu correo electrónico">
+        <div class="error-message" *ngIf="errors.email">{{ errors.email }}</div>
+      </div>
+
+      <!-- Campo Password -->
+      <div class="form-group">
+        <label for="password" class="form-label">Contraseña</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password"
+          [(ngModel)]="user.password"
+          (input)="validatePassword()"
+          (blur)="validatePassword()"
+          #password="ngModel"
+          required
+          class="form-input"
+          [class.error]="errors.password"
+          placeholder="Ingresa tu contraseña">
+        <div class="error-message" *ngIf="errors.password">{{ errors.password }}</div>
+      </div>
+
+      <!-- Botón Iniciar Sesión -->
+      <button 
+        type="submit" 
+        class="signin-button"
+        [disabled]="!isFormValid">
+        Iniciar sesion
+      </button>
+
+      <!-- Link Forgot Password -->
+      <div class="forgot-password">
+        <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+      </div>
+    </form>
+
+    <!-- Link para crear cuenta -->
+    <div class="signup-link">
+      <span class="signup-text">¿No tienes una cuenta? </span>
+      <a (click)="goToRegister()" class="signup-anchor" style="cursor: pointer;">Registrarse</a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,111 @@
+<div class="register-container">
+  <!-- Header azul con logo -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-container">
+        <img src="petfy-logo.png" alt="Petfy Logo" class="logo" 
+             onerror="console.log('Error cargando logo'); this.style.display='none';">
+        <span class="logo-text">Petfy</span>
+      </div>
+    </div>
+    <div class="header-center">
+      <h1>Create Account</h1>
+    </div>
+    <div class="header-right">
+      <button class="header-button" (click)="goToContact()">Contacto</button>
+      <button class="header-button" (click)="goToAbout()">Sobre Nosotros</button>
+    </div>
+  </div>
+
+  <!-- Formulario de registro -->
+  <div class="form-container">
+    <form class="register-form" (ngSubmit)="onSubmit()" #registerForm="ngForm">
+      <!-- Campo Nombre de usuario -->
+      <div class="form-group">
+        <label for="username" class="form-label">Nombre de usuario</label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username"
+          [(ngModel)]="user.username"
+          (input)="validateUsername()"
+          (blur)="validateUsername()"
+          #username="ngModel"
+          required
+          class="form-input"
+          [class.error]="errors.username"
+          placeholder="Ingresa tu nombre de usuario">
+        <div class="error-message" *ngIf="errors.username">{{ errors.username }}</div>
+      </div>
+
+      <!-- Campo Mail -->
+      <div class="form-group">
+        <label for="email" class="form-label">Mail</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email"
+          [(ngModel)]="user.email"
+          (input)="validateEmail()"
+          (blur)="validateEmail()"
+          #email="ngModel"
+          required
+          email
+          class="form-input"
+          [class.error]="errors.email"
+          placeholder="Ingresa tu correo electrónico">
+        <div class="error-message" *ngIf="errors.email">{{ errors.email }}</div>
+      </div>
+
+      <!-- Campo Contraseña -->
+      <div class="form-group">
+        <label for="password" class="form-label">Contraseña</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password"
+          [(ngModel)]="user.password"
+          (input)="validatePassword()"
+          (blur)="validatePassword()"
+          #password="ngModel"
+          required
+          class="form-input"
+          [class.error]="errors.password"
+          placeholder="Ingresa tu contraseña">
+        <div class="error-message" *ngIf="errors.password">{{ errors.password }}</div>
+      </div>
+
+      <!-- Campo Repetir Contraseña -->
+      <div class="form-group">
+        <label for="confirmPassword" class="form-label repeat-label">Repetir Contraseña</label>
+        <input 
+          type="password" 
+          id="confirmPassword" 
+          name="confirmPassword"
+          [(ngModel)]="user.confirmPassword"
+          (input)="validateConfirmPassword()"
+          (blur)="validateConfirmPassword()"
+          #confirmPassword="ngModel"
+          required
+          class="form-input"
+          [class.error]="errors.confirmPassword"
+          placeholder="Confirma tu contraseña">
+        <div class="error-message" *ngIf="errors.confirmPassword">{{ errors.confirmPassword }}</div>
+      </div>
+
+      <!-- Botón Sign Up -->
+      <button 
+        type="submit" 
+        class="signup-button"
+        [disabled]="!isFormValid">
+        Sign Up
+      </button>
+    </form>
+
+    <!-- Link de login -->
+    <div class="login-link">
+      <span class="login-text">¿Ya tenes cuenta? </span>
+      <a (click)="goToLogin()" class="login-anchor" style="cursor: pointer;">Iniciar sesion</a>
+    </div>
+  </div>
+</div>

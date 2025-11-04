@@ -1,0 +1,139 @@
+<div class="walker-requests-container">
+  <!-- Header azul -->
+  <div class="header">
+    <div class="header-left">
+      <button class="back-button" (click)="goBack()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 12H5M12 19l-7-7 7-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="header-center">
+      <h1>Solicitudes de Paseos</h1>
+    </div>
+    <div class="header-right"></div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="main-content">
+    <!-- Panel izquierdo: Lista de solicitudes -->
+    <div class="requests-panel">
+      <div class="panel-header">
+        <h2>Solicitudes disponibles</h2>
+      </div>
+
+      <div class="requests-list">
+        <!-- Solicitudes Pendientes -->
+        <div class="section-title" *ngIf="pendingRequests.length > 0">Paseos a confirmar</div>
+        <div class="walk-item" 
+             *ngFor="let request of pendingRequests" 
+             (click)="selectRequest(request)"
+             [class.selected]="selectedRequest === request">
+          <div class="walk-info">
+            <div class="walk-header">
+              <span class="walk-date">{{ formatDate(request.date) }}</span>
+              <span class="walk-time">{{ request.startTime }}</span>
+            </div>
+            <div class="walk-details">
+              <span class="walk-status pending">PENDIENTE</span>
+            </div>
+            <div class="walk-address">{{ request.address }}</div>
+          </div>
+          <button class="accept-button" 
+                  (click)="acceptRequest(); $event.stopPropagation()">
+            Aceptar
+          </button>
+        </div>
+
+        <!-- Solicitudes Confirmadas -->
+        <div class="section-title" *ngIf="confirmedRequests.length > 0">Paseos confirmados</div>
+        <div class="walk-item confirmed" 
+             *ngFor="let request of confirmedRequests" 
+             (click)="selectRequest(request)"
+             [class.selected]="selectedRequest === request">
+          <div class="walk-info">
+            <div class="walk-header">
+              <span class="walk-date">{{ formatDate(request.date) }}</span>
+              <span class="walk-time">{{ request.startTime }}</span>
+            </div>
+            <div class="walk-details">
+              <span class="walk-status confirmed">CONFIRMADO</span>
+            </div>
+            <div class="walk-address">{{ request.address }}</div>
+          </div>
+          <button class="message-button" 
+                  (click)="openChat(request); $event.stopPropagation()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="empty-message" *ngIf="pendingRequests.length === 0 && confirmedRequests.length === 0">
+          No hay solicitudes disponibles
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel derecho: Detalle -->
+    <div class="detail-panel">
+      <div class="panel-header">
+        <h2>Detalle</h2>
+      </div>
+      <div class="detail-content">
+        <div class="empty-detail" *ngIf="!selectedRequest">
+          <p>Seleccioná una solicitud para ver el detalle.</p>
+        </div>
+        <div class="walk-detail" *ngIf="selectedRequest">
+          <h3>Detalle de la solicitud</h3>
+          <div class="detail-item">
+            <span class="detail-label">Fecha:</span>
+            <span class="detail-value">{{ formatDate(selectedRequest.date) }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Hora de inicio:</span>
+            <span class="detail-value">{{ selectedRequest.startTime }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Hora de fin:</span>
+            <span class="detail-value">{{ selectedRequest.endTime }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Dirección:</span>
+            <span class="detail-value">{{ selectedRequest.address }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Estado:</span>
+            <span class="detail-value" [class.status-pending]="selectedRequest.status === 'pending'">
+              {{ selectedRequest.status === 'pending' ? 'PENDIENTE' : 'CONFIRMADO' }}
+            </span>
+          </div>
+
+          <!-- Botones de acción solo para paseos confirmados -->
+          <div class="action-buttons" *ngIf="selectedRequest.status === 'confirmed'">
+            <button 
+              class="walk-button start-button" 
+              (click)="startWalk()" 
+              [disabled]="isButtonDisabled.get(selectedRequest.id) || walkStatus.get(selectedRequest.id) !== 'not_started'"
+              *ngIf="walkStatus.get(selectedRequest.id) === 'not_started'">
+              Iniciar Paseo
+            </button>
+            
+            <button 
+              class="walk-button finish-button" 
+              (click)="finishWalk()" 
+              [disabled]="isButtonDisabled.get(selectedRequest.id) || walkStatus.get(selectedRequest.id) !== 'in_progress'"
+              *ngIf="walkStatus.get(selectedRequest.id) === 'in_progress'">
+              Finalizar Paseo
+            </button>
+            
+            <div class="walk-finished" *ngIf="walkStatus.get(selectedRequest.id) === 'finished'">
+              <span class="finished-icon">✓</span>
+              <span>Paseo Finalizado</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
