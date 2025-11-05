@@ -54,6 +54,21 @@ public class Usuario {
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Paseo> paseosComoCliente;
 
+    @OneToMany(mappedBy = "usuario1", cascade = CascadeType.ALL)
+    private List<Chat> chatsComoUsuario1;
+
+    @OneToMany(mappedBy = "usuario2", cascade = CascadeType.ALL)
+    private List<Chat> chatsComoUsuario2;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private List<Mensaje> mensajes;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private List<Solicitud> solicitudes;
+
+    @OneToMany(mappedBy = "adminAprobador", cascade = CascadeType.ALL)
+    private List<Solicitud> solicitudesAprobadas;
+
     @PrePersist
     protected void onCreate() {
         fechaRegistro = LocalDateTime.now();
@@ -61,7 +76,8 @@ public class Usuario {
 
     public enum RolUsuario {
         CUSTOMER,  // Cliente
-        WALKER     // Paseador
+        WALKER,    // Paseador
+        ADMIN      // Administrador
     }
 }
 
