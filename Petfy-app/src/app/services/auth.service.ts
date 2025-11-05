@@ -212,12 +212,43 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  // Refrescar usuario actual desde el backend
+  refreshCurrentUser(): Observable<User | null> {
+    const currentUser = this.getCurrentUser();
+    if (!currentUser) {
+      return of(null);
+    }
+
+    // Llamar al endpoint para obtener datos actualizados
+    return this.http.get<any>(`${this.apiUrl}/current-user`)
+      .pipe(
+        map(response => {
+          const user: User = {
+            username: response.username,
+            email: response.email,
+            password: currentUser.password, // Mantener la contraseña del localStorage
+            role: response.role || 'customer'
+          };
+
+          // Actualizar usuario en localStorage y Subject
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          this.currentUserSubject.next(user);
+
+          return user;
+        }),
+        catchError(error => {
+          console.error('Error al refrescar usuario:', error);
+          return of(currentUser);
+        })
+      );
+  }
+
   // Verificar si hay usuario logueado
   isLoggedIn(): boolean {
     return this.currentUserSubject.value !== null;
   }
 
-  // Cambiar rol del usuario a walker
+  // Cambiar rol del usuario a walker (método local - mantener por compatibilidad)
   setWalkerRole(): boolean {
     const currentUser = this.getCurrentUser();
     if (!currentUser) return false;
@@ -236,6 +267,61 @@ export class AuthService {
     this.currentUserSubject.next(currentUser);
 
     return true;
+  }
+
+  // Solicitar ser paseador en el backend
+  solicitarSerPaseador(phone: string, description: string, documentImage: File, validationCode?: string | null): Observable<{ success: boolean; message: string }> {
+    const currentUser = this.getCurrentUser();
+    if (!currentUser) {
+      return of({
+        success: false,
+        message: 'No hay usuario autenticado'
+      });
+    }
+
+    // Crear FormData para enviar archivo y datos
+    const formData = new FormData();
+    const requestData: any = {
+      phone: phone,
+      description: description
+    };
+    
+    // Agregar código de validación (solo se llama si hay código)
+    if (validationCode) {
+      requestData.validationCode = validationCode.trim();
+    }
+    formData.append('request', new Blob([JSON.stringify(requestData)], { type: 'application/json' }));
+    if (documentImage) {
+      formData.append('documentImage', documentImage);
+    }
+
+    // NO establecer Content-Type para FormData - el navegador lo hace automáticamente con el boundary
+    // El interceptor HTTP agregará automáticamente el header de Authorization
+    // Llamar al backend
+    return this.http.post<{ success: boolean; message: string; data?: any }>('http://localhost:8080/api/paseadores/solicitar', formData)
+      .pipe(
+        map(response => {
+          if (response.success) {
+            // Actualizar rol del usuario en el frontend solo si fue aprobado
+            const mensaje = response.message || '';
+            if (mensaje.includes('aprobada')) {
+              currentUser.role = 'walker';
+              localStorage.setItem('currentUser', JSON.stringify(currentUser));
+              this.currentUserSubject.next(currentUser);
+            }
+          }
+          return response;
+        }),
+        catchError(error => {
+          console.error('Error al solicitar ser paseador:', error);
+          console.error('Error completo:', JSON.stringify(error, null, 2));
+          const errorMessage = error.error?.message || error.message || 'Error al conectar con el servidor';
+          return of({
+            success: false,
+            message: errorMessage
+          });
+        })
+      );
   }
 
   // Verificar si el usuario es paseador

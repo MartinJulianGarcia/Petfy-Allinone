@@ -22,6 +22,9 @@ public class WalkerApplicationRequest {
     @NotBlank(message = "La descripción es requerida")
     private String description;
 
+    // Código de validación opcional (si se envía, se valida para aprobación automática)
+    private String validationCode;
+
     // Nota: El archivo de imagen se manejará por separado en el controlador
     // private MultipartFile documentImage;
 }

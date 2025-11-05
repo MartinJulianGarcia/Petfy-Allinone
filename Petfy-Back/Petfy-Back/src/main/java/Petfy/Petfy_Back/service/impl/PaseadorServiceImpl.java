@@ -66,17 +66,45 @@ public class PaseadorServiceImpl implements PaseadorService {
         paseador.setTelefono(request.getPhone());
         paseador.setDescripcion(request.getDescription());
         paseador.setRutaDocumento(rutaDocumento);
-        paseador.setEstadoAprobacion(Paseador.EstadoAprobacion.PENDIENTE);
+        
+        // Validar código de aprobación
+        // Si el código es "cascuino", aprobar automáticamente, sino dejar en PENDIENTE
+        String validationCode = request.getValidationCode();
+        
+        // Validar que el código sea exactamente "cascuino" (case-insensitive)
+        boolean codigoValido = validationCode != null 
+            && !validationCode.trim().isEmpty() 
+            && validationCode.trim().equalsIgnoreCase("cascuino");
+        
+        if (codigoValido) {
+            paseador.setEstadoAprobacion(Paseador.EstadoAprobacion.APROBADO);
+        } else {
+            // Si el código es incorrecto o no existe, dejar en PENDIENTE
+            paseador.setEstadoAprobacion(Paseador.EstadoAprobacion.PENDIENTE);
+        }
 
         // Guardar paseador
         paseadorRepository.save(paseador);
 
-        // Actualizar rol del usuario a WALKER
-        // Nota: En el frontend se actualiza el rol inmediatamente, pero aquí podría ser después de aprobación
-        usuario.setRol(Usuario.RolUsuario.WALKER);
-        usuarioRepository.save(usuario);
-
-        return ApiResponse.success("Solicitud de paseador enviada exitosamente. Ahora puedes ver las solicitudes de los clientes.");
+        // Actualizar rol del usuario a WALKER solo si fue aprobado
+        if (paseador.getEstadoAprobacion() == Paseador.EstadoAprobacion.APROBADO) {
+            usuario.setRol(Usuario.RolUsuario.WALKER);
+            // Sincronizar la relación bidireccional
+            usuario.setPaseador(paseador);
+            // Guardar y forzar persistencia inmediata
+            Usuario usuarioActualizado = usuarioRepository.save(usuario);
+            usuarioRepository.flush(); // Forzar flush para asegurar persistencia inmediata
+            
+            return ApiResponse.success("¡Solicitud aprobada! Ya eres un paseador. Ahora puedes ver las solicitudes de los clientes.");
+        } else {
+            // Si está pendiente, solo guardar el paseador sin cambiar el rol
+            // Sincronizar la relación bidireccional
+            usuario.setPaseador(paseador);
+            usuarioRepository.save(usuario);
+            usuarioRepository.flush();
+            
+            return ApiResponse.success("Solicitud enviada. Tu solicitud quedó en revisión y será evaluada por nuestro equipo.");
+        }
     }
 
     /**

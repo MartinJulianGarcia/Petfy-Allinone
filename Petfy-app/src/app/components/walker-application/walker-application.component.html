@@ -87,3 +87,56 @@
     </div>
   </div>
 </div>
+
+<!-- Modal de código de validación -->
+<div class="validation-modal" *ngIf="showValidationModal" (click)="closeValidationModal()">
+  <div class="validation-modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Código de Validación</h3>
+      <button class="close-button" (click)="closeValidationModal()" [disabled]="isSubmitting">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <p class="modal-description">
+        Ingresa el código de validación para aprobar tu solicitud automáticamente. 
+        Si no tienes el código o lo cancelas, tu solicitud quedará en revisión.
+      </p>
+      
+      <div class="form-group">
+        <label class="form-label" for="validationCode">Código de Validación</label>
+        <input 
+          type="text" 
+          id="validationCode" 
+          [(ngModel)]="validationCode"
+          placeholder="Ingresa el código"
+          class="form-input"
+          [disabled]="isSubmitting"
+          (keyup.enter)="submitWithValidationCode()"
+          autofocus
+        >
+      </div>
+      
+      <div class="modal-actions">
+        <button 
+          type="button" 
+          class="cancel-button" 
+          (click)="cancelValidation()"
+          [disabled]="isSubmitting">
+          Cancelar (Enviar a revisión)
+        </button>
+        <button 
+          type="button" 
+          class="submit-button" 
+          (click)="submitWithValidationCode()"
+          [disabled]="isSubmitting || !validationCode.trim()">
+          {{ isSubmitting ? 'Enviando...' : 'Validar y Enviar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

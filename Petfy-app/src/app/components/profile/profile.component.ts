@@ -26,10 +26,23 @@ export class ProfileComponent implements OnInit {
     if (!this.currentUser) {
       // Si no hay usuario logueado, redirigir al login
       this.router.navigate(['/login']);
+      return;
     }
 
-    // Verificar si es paseador
-    this.isWalker = this.authService.isWalker();
+    // Obtener datos actualizados del backend para asegurar que el rol esté sincronizado
+    this.authService.refreshCurrentUser().subscribe({
+      next: (user) => {
+        if (user) {
+          this.currentUser = user;
+          this.isWalker = this.authService.isWalker();
+        }
+      },
+      error: (error) => {
+        console.error('Error al obtener usuario actual:', error);
+        // Si falla, usar el usuario del localStorage
+        this.isWalker = this.authService.isWalker();
+      }
+    });
   }
 
   // Volver a la página anterior
