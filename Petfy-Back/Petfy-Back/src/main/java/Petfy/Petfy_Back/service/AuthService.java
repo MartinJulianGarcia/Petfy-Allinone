@@ -2,6 +2,7 @@ package Petfy.Petfy_Back.service;
 
 import Petfy.Petfy_Back.dto.request.LoginRequest;
 import Petfy.Petfy_Back.dto.request.RegisterRequest;
+import Petfy.Petfy_Back.dto.request.UpdateUsuarioRequest;
 import Petfy.Petfy_Back.dto.response.ApiResponse;
 import Petfy.Petfy_Back.dto.response.UsuarioResponse;
 
@@ -55,6 +56,17 @@ public interface AuthService {
      * eliminando las credenciales almacenadas
      */
     void logout();
+
+    /**
+     * Actualiza el nombre de usuario del usuario autenticado
+     * 
+     * Frontend: profile.component.ts -> updateProfile()
+     * 
+     * @param email Email del usuario autenticado
+     * @param request Datos a actualizar (solo username)
+     * @return ApiResponse con el usuario actualizado o mensaje de error
+     */
+    ApiResponse<UsuarioResponse> updateUsuario(String email, UpdateUsuarioRequest request);
 }
 
 

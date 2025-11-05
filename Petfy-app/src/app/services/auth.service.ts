@@ -328,5 +328,53 @@ export class AuthService {
   isWalker(): boolean {
     return this.getCurrentUser()?.role === 'walker';
   }
+
+  // Actualizar perfil del usuario (solo nombre de usuario)
+  updateProfile(username: string): Observable<{ success: boolean; message: string; user?: User }> {
+    const currentUser = this.getCurrentUser();
+    if (!currentUser) {
+      return of({
+        success: false,
+        message: 'No hay usuario autenticado'
+      });
+    }
+
+    return this.http.put<{ success: boolean; message: string; data?: any }>(`${this.apiUrl}/profile`, { username })
+      .pipe(
+        map(response => {
+          if (response.success && response.data) {
+            const user: User = {
+              username: response.data.username,
+              email: response.data.email,
+              password: currentUser.password, // Mantener la contraseña del localStorage
+              role: response.data.role || 'customer'
+            };
+
+            // Actualizar usuario en localStorage y Subject
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            this.currentUserSubject.next(user);
+
+            return {
+              success: true,
+              message: response.message || 'Perfil actualizado exitosamente',
+              user: user
+            };
+          } else {
+            return {
+              success: false,
+              message: response.message || 'Error al actualizar el perfil'
+            };
+          }
+        }),
+        catchError(error => {
+          console.error('Error al actualizar perfil:', error);
+          const errorMessage = error.error?.message || error.message || 'Error al conectar con el servidor';
+          return of({
+            success: false,
+            message: errorMessage
+          });
+        })
+      );
+  }
 }
 

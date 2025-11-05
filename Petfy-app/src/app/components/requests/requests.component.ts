@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 interface WalkRequest {
   id: number;
@@ -25,7 +26,7 @@ export class RequestsComponent implements OnInit, OnDestroy {
   selectedRequest: WalkRequest | null = null;
   private timers: Map<number, any> = new Map();
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit() {
     this.loadRequests();
@@ -33,9 +34,21 @@ export class RequestsComponent implements OnInit, OnDestroy {
   }
 
   loadRequests() {
+    const currentUser = this.authService.getCurrentUser();
+    const currentUsername = currentUser?.username || '';
+    
     const allRequests = JSON.parse(localStorage.getItem('walkRequests') || '[]');
-    this.pendingRequests = allRequests.filter((req: WalkRequest) => req.status === 'pending');
-    this.confirmedRequests = allRequests.filter((req: WalkRequest) => req.status === 'confirmed');
+    
+    // Filtrar solicitudes pendientes (excluir las que fueron aceptadas por este usuario como paseador)
+    this.pendingRequests = allRequests.filter((req: WalkRequest) => 
+      req.status === 'pending' && req.walker !== currentUsername
+    );
+    
+    // Filtrar solicitudes confirmadas (excluir las que fueron aceptadas por este usuario como paseador)
+    // Solo mostrar las que fueron aceptadas por otro paseador
+    this.confirmedRequests = allRequests.filter((req: WalkRequest) => 
+      req.status === 'confirmed' && req.walker !== currentUsername
+    );
     
     // Reiniciar timers para las nuevas solicitudes pendientes
     this.startAutoConfirmationTimers();

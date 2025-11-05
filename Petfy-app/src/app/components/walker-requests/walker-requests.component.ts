@@ -52,34 +52,78 @@ export class WalkerRequestsComponent implements OnInit {
     // Cargar todas las solicitudes desde localStorage
     const allRequests = JSON.parse(localStorage.getItem('walkRequests') || '[]');
     
-    // Filtrar solicitudes pendientes
-    const realPendingRequests = allRequests.filter((req: WalkRequest) => req.status === 'pending');
-    
-    // Si no hay solicitudes pendientes, mostrar solicitudes de ejemplo
-    this.pendingRequests = realPendingRequests.length === 0 ? this.getExampleRequests() : realPendingRequests;
-    
-    // Filtrar solicitudes confirmadas por este paseador
+    // Filtrar solicitudes confirmadas por este paseador PRIMERO
     this.confirmedRequests = allRequests.filter((req: WalkRequest) => 
       req.status === 'confirmed' && req.walker === currentUsername
     );
+    
+    // Obtener IDs de solicitudes confirmadas por este paseador (para excluirlas de pendientes)
+    const confirmedIds = this.confirmedRequests.map(req => req.id);
+    
+    // Filtrar solicitudes pendientes (excluyendo las que ya fueron confirmadas por este paseador)
+    const realPendingRequests = allRequests.filter((req: WalkRequest) => 
+      req.status === 'pending' && !confirmedIds.includes(req.id)
+    );
+    
+    // Si no hay solicitudes pendientes reales, mostrar solicitudes de ejemplo (solo si no fueron aceptadas)
+    const exampleRequests = this.getExampleRequests();
+    const exampleNotAccepted = exampleRequests.filter(example => 
+      !confirmedIds.includes(example.id)
+    );
+    
+    this.pendingRequests = realPendingRequests.length > 0 
+      ? realPendingRequests 
+      : (exampleNotAccepted.length > 0 ? exampleNotAccepted : []);
   }
 
   getExampleRequests(): WalkRequest[] {
+    // Obtener fecha y hora actuales
+    const now = new Date();
+    const currentHour = now.getHours();
+    
+    // Formatear fecha actual (YYYY-MM-DD)
+    const currentDate = now.toISOString().split('T')[0];
+    
+    // Calcular horas para las solicitudes (asegurar que sean iguales o mayores a la hora actual)
+    // Primera solicitud: hora actual + 1 hora (mínimo 1 hora desde ahora)
+    let hour1 = currentHour + 1;
+    let endHour1 = hour1 + 1;
+    if (hour1 >= 24) {
+      hour1 = 23;
+      endHour1 = 23; // Si es muy tarde, usar 23:00-23:59
+    } else if (endHour1 >= 24) {
+      endHour1 = 23;
+    }
+    const startTime1 = `${hour1.toString().padStart(2, '0')}:00`;
+    const endTime1 = `${endHour1.toString().padStart(2, '0')}:00`;
+    
+    // Segunda solicitud: hora actual + 2 horas (mínimo 2 horas desde ahora)
+    let hour2 = currentHour + 2;
+    let endHour2 = hour2 + 1;
+    if (hour2 >= 24) {
+      hour2 = 23;
+      endHour2 = 23; // Si es muy tarde, usar 23:00-23:59
+    } else if (endHour2 >= 24) {
+      endHour2 = 23;
+    }
+    const startTime2 = `${hour2.toString().padStart(2, '0')}:30`;
+    const endTime2 = `${endHour2.toString().padStart(2, '0')}:30`;
+    
     return [
       {
         id: 999,
-        date: '2025-10-25',
-        startTime: '14:00',
-        endTime: '15:00',
+        date: currentDate,
+        startTime: startTime1,
+        endTime: endTime1,
         address: 'Av. Libertador 4567, CABA',
         walker: 'Aleatorio',
         status: 'pending'
       },
       {
         id: 998,
-        date: '2025-10-26',
-        startTime: '10:30',
-        endTime: '11:30',
+        date: currentDate,
+        startTime: startTime2,
+        endTime: endTime2,
         address: 'Av. Cabildo 1234, CABA',
         walker: 'Aleatorio',
         status: 'pending'
@@ -109,40 +153,35 @@ export class WalkerRequestsComponent implements OnInit {
       return;
     }
 
-    // Si es una solicitud de ejemplo, agregarla a localStorage
-    if (this.selectedRequest.id === 999 || this.selectedRequest.id === 998) {
-      const allRequests = JSON.parse(localStorage.getItem('walkRequests') || '[]');
-      
-      // Buscar si ya existe
-      const existingIndex = allRequests.findIndex((req: WalkRequest) => req.id === this.selectedRequest!.id);
-      
-      if (existingIndex !== -1) {
-        allRequests[existingIndex].status = 'confirmed';
-        allRequests[existingIndex].walker = this.authService.getCurrentUser()?.username || 'Paseador';
-      } else {
-        const newRequest = {
-          ...this.selectedRequest,
-          status: 'confirmed' as const,
-          walker: this.authService.getCurrentUser()?.username || 'Paseador'
-        };
-        allRequests.push(newRequest);
-      }
-      
-      localStorage.setItem('walkRequests', JSON.stringify(allRequests));
+    const currentUsername = this.authService.getCurrentUser()?.username || 'Paseador';
+    const allRequests = JSON.parse(localStorage.getItem('walkRequests') || '[]');
+    
+    // Buscar si ya existe en localStorage
+    const existingIndex = allRequests.findIndex((req: WalkRequest) => req.id === this.selectedRequest!.id);
+    
+    if (existingIndex !== -1) {
+      // Actualizar solicitud existente
+      allRequests[existingIndex].status = 'confirmed';
+      allRequests[existingIndex].walker = currentUsername;
     } else {
-      // Si es una solicitud real, actualizarla
-      const allRequests = JSON.parse(localStorage.getItem('walkRequests') || '[]');
-      const requestIndex = allRequests.findIndex((req: WalkRequest) => req.id === this.selectedRequest!.id);
-      
-      if (requestIndex !== -1) {
-        allRequests[requestIndex].status = 'confirmed';
-        allRequests[requestIndex].walker = this.authService.getCurrentUser()?.username || 'Paseador';
-        localStorage.setItem('walkRequests', JSON.stringify(allRequests));
-      }
+      // Si es una solicitud de ejemplo que no existe en localStorage, agregarla
+      const newRequest = {
+        ...this.selectedRequest,
+        status: 'confirmed' as const,
+        walker: currentUsername
+      };
+      allRequests.push(newRequest);
     }
     
+    // Guardar en localStorage
+    localStorage.setItem('walkRequests', JSON.stringify(allRequests));
+    
     alert('¡Solicitud aceptada exitosamente!');
+    
+    // Recargar las solicitudes para actualizar las listas
     this.loadRequests();
+    
+    // Limpiar selección
     this.selectedRequest = null;
   }
 

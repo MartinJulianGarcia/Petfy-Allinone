@@ -2,6 +2,7 @@ package Petfy.Petfy_Back.controller;
 
 import Petfy.Petfy_Back.dto.request.LoginRequest;
 import Petfy.Petfy_Back.dto.request.RegisterRequest;
+import Petfy.Petfy_Back.dto.request.UpdateUsuarioRequest;
 import Petfy.Petfy_Back.dto.response.ApiResponse;
 import Petfy.Petfy_Back.dto.response.UsuarioResponse;
 import Petfy.Petfy_Back.service.AuthService;
@@ -88,6 +89,31 @@ public class AuthController {
         String email = authentication.getName(); // Email del usuario autenticado
         UsuarioResponse usuario = authService.getCurrentUser(email);
         return ResponseEntity.ok(usuario);
+    }
+
+    /**
+     * Actualiza el nombre de usuario del usuario autenticado
+     * 
+     * Frontend: profile.component.ts -> updateProfile()
+     * 
+     * PUT /api/auth/profile
+     * Header: Authorization: Basic base64(email:password)
+     * Body: { username }
+     * 
+     * Response: { success: true/false, message: "...", data: UsuarioResponse }
+     */
+    @PutMapping("/profile")
+    public ResponseEntity<ApiResponse<UsuarioResponse>> updateProfile(
+            @Valid @RequestBody UpdateUsuarioRequest request,
+            Authentication authentication) {
+        String email = authentication.getName();
+        ApiResponse<UsuarioResponse> response = authService.updateUsuario(email, request);
+        
+        if (response.isSuccess()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
     }
 
     /**

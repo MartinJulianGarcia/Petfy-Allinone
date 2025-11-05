@@ -77,3 +77,56 @@
   </div>
 </div>
 
+<!-- Modal de edición de perfil -->
+<div class="edit-modal" *ngIf="showEditModal" (click)="closeEditModal()">
+  <div class="edit-modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Editar Perfil</h3>
+      <button class="close-button" (click)="closeEditModal()" [disabled]="isUpdating">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <p class="modal-description">
+        Solo puedes cambiar tu nombre de usuario. El email no se puede modificar.
+      </p>
+      
+      <div class="form-group">
+        <label class="form-label" for="editUsername">Nombre de Usuario</label>
+        <input 
+          type="text" 
+          id="editUsername" 
+          [(ngModel)]="editUsername"
+          placeholder="Ingresa tu nuevo nombre de usuario"
+          class="form-input"
+          [disabled]="isUpdating"
+          [maxlength]="20"
+          autofocus
+        >
+        <small class="form-help">Entre 3 y 20 caracteres</small>
+      </div>
+      
+      <div class="modal-actions">
+        <button 
+          type="button" 
+          class="cancel-button" 
+          (click)="closeEditModal()"
+          [disabled]="isUpdating">
+          Cancelar
+        </button>
+        <button 
+          type="button" 
+          class="submit-button" 
+          (click)="saveProfile()"
+          [disabled]="isUpdating || !editUsername.trim() || editUsername.trim().length < 3">
+          {{ isUpdating ? 'Guardando...' : 'Guardar Cambios' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

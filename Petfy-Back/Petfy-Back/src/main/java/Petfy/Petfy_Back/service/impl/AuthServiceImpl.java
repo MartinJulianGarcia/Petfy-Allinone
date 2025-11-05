@@ -2,6 +2,7 @@ package Petfy.Petfy_Back.service.impl;
 
 import Petfy.Petfy_Back.dto.request.LoginRequest;
 import Petfy.Petfy_Back.dto.request.RegisterRequest;
+import Petfy.Petfy_Back.dto.request.UpdateUsuarioRequest;
 import Petfy.Petfy_Back.dto.response.ApiResponse;
 import Petfy.Petfy_Back.dto.response.UsuarioResponse;
 import Petfy.Petfy_Back.model.Usuario;
@@ -98,6 +99,29 @@ public class AuthServiceImpl implements AuthService {
         // En Basic Auth stateless, el logout se maneja principalmente en el frontend
         // Eliminando las credenciales del localStorage
         // Este método está aquí por si se implementa JWT en el futuro
+    }
+
+    @Override
+    public ApiResponse<UsuarioResponse> updateUsuario(String email, UpdateUsuarioRequest request) {
+        // Buscar usuario por email
+        Usuario usuario = usuarioRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Verificar que el nuevo username no exista (si es diferente al actual)
+        if (!usuario.getUsername().equals(request.getUsername())) {
+            if (usuarioRepository.existsByUsername(request.getUsername())) {
+                return ApiResponse.error("Ya existe un usuario con este nombre de usuario");
+            }
+        }
+
+        // Actualizar solo el nombre de usuario
+        usuario.setUsername(request.getUsername());
+        Usuario usuarioActualizado = usuarioRepository.save(usuario);
+
+        return ApiResponse.success(
+            "Nombre de usuario actualizado exitosamente",
+            UsuarioResponse.fromEntity(usuarioActualizado)
+        );
     }
 }
 
